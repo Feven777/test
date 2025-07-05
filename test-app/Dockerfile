@@ -1,21 +1,26 @@
-# Use Node.js 18 base image
+# Use official Node.js 22 Alpine image
 FROM node:22-alpine
 
-# Set working directory
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set working directory inside container
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
+# Copy package.json and pnpm-lock.yaml (if exists)
+COPY package.json pnpm-lock.yaml* ./
 
-# Copy the rest of the app
+# Install dependencies
+RUN pnpm install
+
+# Copy all project files
 COPY . .
 
-# Build the app
-RUN npm run build
+# Build the project (adjust if your build script is different)
+RUN pnpm build
 
-# Expose the port Next.js runs on
+# Expose port 3000 for Next.js default
 EXPOSE 3000
 
-# Run the app
-CMD ["npm", "start"]
+# Start the app
+CMD ["pnpm", "start"]
